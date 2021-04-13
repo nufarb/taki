@@ -19,24 +19,32 @@ def helper():
     webbrowser.open('https://www.takigame.com/taki-game-rules')
 
 
+def handle_user_input(msg):
+    user_input = input(msg)
+    if user_input == "--help":
+        helper()
+        return handle_user_input(msg)
+    return user_input
+
+
 def sets_players():
-    num_players = int(input("How many players are interested in playing? "))
+    num_players = int(handle_user_input("How many players are interested in playing? "))
     while num_players < 2 or num_players > 4:
         print("This game can be played by 2 to 4 players ")
-        num_players = int(input("Please enter the number of players again: "))
+        num_players = int(handle_user_input("Please enter the number of players again: "))
     list_players = []
     while len(list_players) < num_players:
-        name = input("Please enter your name: ")
+        name = handle_user_input("Please enter your name: ")
         flag = True
         while flag:
             if name in list_players:
-                answer = input("{} is already in the list name are you sure you want to players to"
-                               " have the same name [y/n]?".format(name))
+                answer = handle_user_input("{} is already in the list name are you sure you want to players to"
+                                           " have the same name [y/n]?".format(name))
                 if answer == 'y':
                     list_players.append(name)
                     flag = False
                 else:
-                    name = input("Please enter your name: ")
+                    name = handle_user_input("Please enter your name: ")
             else:
                 list_players.append(name)
                 flag = False
@@ -89,17 +97,10 @@ def card_rule(card, color):
             if new_color is not None:
                 print("The color \"{}\" is not available, here are your options: {}".
                       format(new_color, AVAILABLE_COLORS))
-            new_color = input('Please choose the color you want: ')
+            new_color = handle_user_input('Please choose the color you want: ')
     elif card == 'king':
         current_step = STEP_STAY_CURRENT_PLAYER
         new_color = color
-    # elif card == 'color_changer':
-    #     current_step = STEP_MOVE_FORWARD
-    #     new_color = None
-    #     while new_color not in AVAILABLE_COLORS:
-    #         if new_color is not None:
-    #             print("The color {} is not available, here are your options: {}".format(new_color, AVAILABLE_COLORS))
-    #         new_color = input('Please choose the color you want: ')
     else:
         current_step = 1
         new_color = card[-1]
@@ -178,7 +179,7 @@ def plus2(used_card, cards_deck):
 
 
 def plus3(players, players_cards, current_player , used_card, cards_deck):
-    player = input('if you have break3 card please enter your name if no one have break3 enter none: ')
+    player = handle_user_input('if you have break3 card please enter your name if no one have break3 enter none: ')
     if player == 'none':
         for i in range(0, 3):
             for j in range(len(players)):
@@ -197,7 +198,7 @@ def plus3(players, players_cards, current_player , used_card, cards_deck):
 
 def step_zero_case(used_card, players_cards, current_player, card, cards_deck, step, color):
     if card[0:4] == 'plus':
-        new_card = input('please choose card again: ')
+        new_card = handle_user_input('please choose card again: ')
         if new_card[0:4] == 'plus':
             used_card.insert(0, new_card)
             del players_cards[current_player][players_cards[current_player].index(new_card)]
@@ -211,18 +212,12 @@ def step_zero_case(used_card, players_cards, current_player, card, cards_deck, s
             del cards_deck[0]
             current_step = step
             return used_card, players_cards, current_step, cards_deck, color
-        elif new_card == '--help':
-            helper()
-            used_card, players_cards, current_step, cards_deck, new_color = step_zero_case(used_card, players_cards,
-                                                                                           current_player, card,
-                                                                                           cards_deck, step, color)
-            return used_card, players_cards, current_step, cards_deck, new_color
         else:
             flag = True
             while flag:
                 flag = checking_legality(used_card, card, color)
                 if flag == True:
-                    new_card = input('please choose card again: ')
+                    new_card = handle_user_input('please choose card again: ')
             used_card.insert(0, new_card)
             del players_cards[current_player][players_cards[current_player].index(new_card)]
             card = new_card
@@ -230,14 +225,8 @@ def step_zero_case(used_card, players_cards, current_player, card, cards_deck, s
             return used_card, players_cards, current_step, cards_deck, color
 
     elif card == 'king':
-        new_card = input('please choose card again: ')
+        new_card = handle_user_input('please choose card again: ')
         if new_card == 'king':
-            used_card, players_cards, current_step, cards_deck, new_color = step_zero_case(used_card, players_cards,
-                                                                                           current_player, card,
-                                                                                           cards_deck, step, color)
-            return used_card, players_cards, current_step, cards_deck, new_color
-        elif new_card == '--help':
-            helper()
             used_card, players_cards, current_step, cards_deck, new_color = step_zero_case(used_card, players_cards,
                                                                                            current_player, card,
                                                                                            cards_deck, step, color)
@@ -257,7 +246,7 @@ def step_zero_case(used_card, players_cards, current_player, card, cards_deck, s
         while status != 'stop':
             flag = True
             while flag:
-                new_card = input('please choose card again: ')
+                new_card = handle_user_input('please choose card again: ')
                 if new_card == 'none':
                     status = 'stop'
                     flag = False
@@ -265,10 +254,6 @@ def step_zero_case(used_card, players_cards, current_player, card, cards_deck, s
                     current_step = step
                 elif new_card != 'close':
                     flag = checking_legality(used_card, card, new_color)
-                elif new_card == '--help':
-                    helper()
-                    used_card, players_cards, current_step, cards_deck, new_color = step_zero_case(used_card, card,
-                                                                                                   step, color)
                 else:
                     status = 'stop'
                     flag = False
@@ -306,10 +291,8 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
             print('The color is ', color)
     flag = True
     while flag:
-        current_card = input(players[current_player] + ' please choose a card: ')
-        if current_card == '--help':
-            helper()
-        elif current_card == 'none':
+        current_card = handle_user_input(players[current_player] + ' please choose a card: ')
+        if current_card == 'none':
             break
         else:
             if current_card in players_cards[current_player]:

@@ -7,6 +7,11 @@
 import random
 import webbrowser
 
+STEP_STAY_CURRENT_PLAYER = 0
+STEP_MOVE_FORWARD = 1
+STEP_SKIP_NEXT = 2
+STEP_MOVE_BACKWARD = -1
+
 
 def helper():
     webbrowser.open('https://www.takigame.com/taki-game-rules')
@@ -64,25 +69,25 @@ def game_boot(cards, num_players):
 
 def card_rule(card, color):
     if card[0:4] == 'stop':
-        current_step = 2
+        current_step = STEP_SKIP_NEXT
         new_color = card[-1]
     elif card[0:-2] == 'change_direction':
-        current_step = -1
+        current_step = STEP_MOVE_BACKWARD
         new_color = card[-1]
     elif card == 'plus3' or card == 'break3':
-        current_step = 1
+        current_step = STEP_MOVE_FORWARD
         new_color = color
     elif card[0:4] == 'plus' or card[0:4] == 'taki':
-        current_step = 0
+        current_step = STEP_STAY_CURRENT_PLAYER
         new_color = card[-1]
     elif card == 'super_taki':
-        current_step = 0
+        current_step = STEP_STAY_CURRENT_PLAYER
         new_color = input('Please choose the color you want: ')
     elif card == 'king':
-        current_step = 0
+        current_step = STEP_STAY_CURRENT_PLAYER
         new_color = color
     elif card == 'color_changer':
-        current_step = 1
+        current_step = STEP_MOVE_FORWARD
         new_color = input('Please choose the color you want: ')
     else:
         current_step = 1
@@ -251,7 +256,7 @@ def step_zero_case(used_card, players_cards, current_player, card, cards_deck, s
                 used_card.insert(0, new_card)
                 del players_cards[current_player][players_cards[current_player].index(card)]
                 current_step, new_color = card_rule(new_card, color)
-        while current_step == 0:
+        while current_step == STEP_STAY_CURRENT_PLAYER:
             used_card, players_cards, current_step, cards_deck, new_color = step_zero_case(used_card, card, step, color)
             return used_card, players_cards, current_step, cards_deck, new_color
         return used_card, players_cards, current_step, cards_deck, new_color
@@ -340,7 +345,7 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
                 return True, current_player + step, 1, players_cards, cards_deck, used_card, color
 
         # stop card case
-        if current_step == 2:
+        if current_step == STEP_SKIP_NEXT:
             if current_player + current_step == len(players):
                 return True, 0, 1, players_cards, cards_deck, used_card, color
             elif current_player + current_step > len(players):
@@ -349,13 +354,13 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
                 return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
 
         # change direction card case
-        elif current_step == -1:
+        elif current_step == STEP_MOVE_BACKWARD:
             if current_player == 0:
                 return True, -1, -1, players_cards, cards_deck, used_card, color
             else:
                 return True, current_player + current_step, -1, players_cards, cards_deck, used_card, color
 
-        else:  # current_step==1
+        else:  # current_step == 1 == STEP_MOVE_FORWARD
             if current_player == len(players) - 1:
                 return True, 0, 1, players_cards, cards_deck, used_card, color
             else:
@@ -364,12 +369,12 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
     # opposite rotation step=-1
     else:
         if current_card == 'none':
-            if current_player == 0:
+            if current_player == STEP_STAY_CURRENT_PLAYER:
                 return True, len(players) - 1, -1, players_cards, cards_deck, used_card, color
             else:
                 return True, current_player + step, -1, players_cards, cards_deck, used_card, color
         # stop card case
-        if current_step == 2:
+        if current_step == STEP_SKIP_NEXT:
             if current_player == 0:
                 return True, -2, -1, players_cards, cards_deck, used_card, color
             elif current_player == 1:
@@ -377,41 +382,41 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
             else:
                 return True, current_player - current_step, -1, players_cards, cards_deck, used_card, color
         # change direction card case
-        elif current_step == -1:
+        elif current_step == STEP_MOVE_BACKWARD:
             if current_player == len(players) - 1:
                 return True, 0, -1, players_cards, cards_deck, used_card, color
             else:
                 return True, current_player - current_step, 1, players_cards, cards_deck, used_card, color
 
-        else:  # current_step==1
+        else:  # current_step == 1 == STEP_MOVE_FORWARD
             if current_player == 0:
                 return True, len(players) - current_step, -1, players_cards, cards_deck, used_card, color
             else:
                 return True, current_player - current_step, -1, players_cards, cards_deck, used_card, color
 
 
+if __name__ == "__main__":
+    players, number_of_players = sets_players()
+    cards_deck = generate_cards_deck()
+    cards_deck, players_cards = game_boot(cards_deck, number_of_players)
 
-players, number_of_players = sets_players()
-cards_deck = generate_cards_deck()
-cards_deck, players_cards = game_boot(cards_deck, number_of_players)
-
-print('lets start to play!')
-current_card = cards_deck[0]
-while current_card[0].isalpha():
-    del cards_deck[0]
-    cards_deck.append(current_card)
+    print('lets start to play!')
     current_card = cards_deck[0]
-del cards_deck[0]
-used_card = [current_card]
-print('The opening card is ' + current_card)
+    while current_card[0].isalpha():
+        del cards_deck[0]
+        cards_deck.append(current_card)
+        current_card = cards_deck[0]
+    del cards_deck[0]
+    used_card = [current_card]
+    print('The opening card is ' + current_card)
 
-current_player = 0
-step = 1
-flag = True
-color = current_card[-1]
-while flag:
-    flag, current_player, step, players_cards, cards_deck, used_card, color = play(players, current_player, step,
-                                                                                   players_cards, cards_deck, used_card,
-                                                                                   color)
+    current_player = 0
+    step = 1
+    flag = True
+    color = current_card[-1]
+    while flag:
+        flag, current_player, step, players_cards, cards_deck, used_card, color = play(players, current_player, step,
+                                                                                       players_cards, cards_deck, used_card,
+                                                                                       color)
 
-print('The winner is ' + players[current_player] + '!!!')
+    print('The winner is ' + players[current_player] + '!!!')

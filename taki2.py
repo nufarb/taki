@@ -1,8 +1,9 @@
 # 1. At any stage of the game if you do not have a suitable card please type none  !!
 # 2. At any stage of the game if you need help and to read the rules of the game please type --help when it's
 #    your time to choose card and when you done type --resume.
-# 3. When you want to finish card or super taki pleas insert close
-# 4. This play fit the regular game and not the TAKI PYRAMID TOURNAMENT
+# 3. At any stage of the game if you want to stop play please type --quit.
+# 4. When you want to finish card or super taki pleas insert close.
+# 5. This play fit the regular game and not the TAKI PYRAMID TOURNAMENT.
 
 import random
 import webbrowser
@@ -24,7 +25,12 @@ def handle_user_input(msg):
     if user_input == "--help":
         helper()
         return handle_user_input(msg)
-    return user_input
+    elif user_input == "--quit":
+        exit()
+    elif user_input == "--resume":
+        return handle_user_input(msg)
+    else:
+        return user_input
 
 
 def sets_players():

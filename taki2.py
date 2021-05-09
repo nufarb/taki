@@ -58,8 +58,9 @@ def sets_players():
 
 
 def generate_cards_deck():
-    deck = ['color_changer'] * 4 + [cards.SUPER_TAKI] * 2 + ['king'] * 2 + ['plus3'] * 2 + ['break3'] * 2
-    special_card = ['stop', 'change_direction', 'plus', 'taki']
+    deck = [cards.COLOR_CHANGER] * 4 + [cards.SUPER_TAKI] * 2 + [cards.KING] * 2 + [cards.PLUS3] * 2 + \
+           [cards.BREAK3] * 2
+    special_card = [cards.STOP, cards.CHANGE_DIRECTION, cards.PLUS, cards.TAKI]
     for i in range(1, 10):
         for j in range(len(AVAILABLE_COLORS)):
             deck.extend([str(i) + '_' + AVAILABLE_COLORS[j]] * 2)
@@ -81,19 +82,19 @@ def game_boot(cards, num_players):
 
 
 def card_rule(card, color):
-    if card[0:4] == 'stop':
+    if card[0:4] == cards.STOP:
         current_step = STEP_SKIP_NEXT
         new_color = card[-1]
-    elif card[0:-2] == 'change_direction':
+    elif card[0:-2] == cards.CHANGE_DIRECTION:
         current_step = STEP_MOVE_BACKWARD
         new_color = card[-1]
-    elif card == 'plus3' or card == 'break3':
+    elif card == cards.PLUS3 or card == cards.BREAK3:
         current_step = STEP_MOVE_FORWARD
         new_color = color
-    elif card[0:4] == 'plus' or card[0:4] == 'taki':
+    elif card[0:4] == cards.PLUS or card[0:4] == cards.TAKI:
         current_step = STEP_STAY_CURRENT_PLAYER
         new_color = card[-1]
-    elif card == cards.SUPER_TAKI or card == 'color_changer':
+    elif card == cards.SUPER_TAKI or card == cards.COLOR_CHANGER:
         if card == cards.SUPER_TAKI:
             current_step = STEP_STAY_CURRENT_PLAYER
         else:
@@ -104,7 +105,7 @@ def card_rule(card, color):
                 print("The color \"{}\" is not available, here are your options: {}".
                       format(new_color, AVAILABLE_COLORS))
             new_color = handle_user_input('Please choose the color you want: ')
-    elif card == 'king':
+    elif card == cards.KING:
         current_step = STEP_STAY_CURRENT_PLAYER
         new_color = color
     else:
@@ -116,22 +117,22 @@ def card_rule(card, color):
 def checking_legality(used_card, current_card, color):
     if used_card[0] == 'done':
         if len(used_card) > 1 and used_card[1][0] == '2':
-            if current_card[0] == '2' or current_card == 'king':
+            if current_card[0] == '2' or current_card == cards.KING:
                 return False
             elif current_card[-1] == color or current_card == cards.SUPER_TAKI or \
-                    current_card == 'color_changer' or current_card == 'king':
+                    current_card == cards.COLOR_CHANGER or current_card == cards.KING:
                 return False
-        elif len(used_card) > 1 and (used_card[1][0] == 'plus3' or used_card[1][0] == 'break3'):
+        elif len(used_card) > 1 and (used_card[1][0] == cards.PLUS3 or used_card[1][0] == cards.BREAK3):
             if current_card[-1] == color or current_card == cards.SUPER_TAKI or \
-                    current_card == 'color_changer' or current_card == 'king':
+                    current_card == cards.COLOR_CHANGER or current_card == cards.KING:
                 return False
         else:
             print("You choose an invalid card! If you don't have valid card please type 'none'. ")
             return True
     elif used_card[0][0].isnumeric():
         if used_card[0][0] == current_card[0] or used_card[0][-1] == current_card[-1] or \
-                current_card == cards.SUPER_TAKI or current_card == 'color_changer' or current_card == 'king' or \
-                current_card == 'plus3' or current_card == 'break3':
+                current_card == cards.SUPER_TAKI or current_card == cards.COLOR_CHANGER or current_card == cards.KING or \
+                current_card == cards.PLUS3 or current_card == cards.BREAK3:
             return False
         else:
             print("You choose an invalid card! If you don't have valid card please type 'none'. ")
@@ -141,24 +142,24 @@ def checking_legality(used_card, current_card, color):
             return False
         elif used_card[0][0:-2] == current_card[0:-2]:
             return False
-        elif current_card == '' or current_card == 'color_changer' or current_card == 'king' or \
-                current_card == 'plus3' or current_card == 'break3':
+        elif current_card == '' or current_card == cards.COLOR_CHANGER or current_card == cards.KING or \
+                current_card == cards.PLUS3 or current_card == cards.BREAK3:
             return False
         else:
             print("You choose an invalid card! If you don't have valid card please type 'none'. ")
             return True
-    elif used_card[0] == 'color_changer':
-        if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == 'king' or \
-                current_card == 'plus3' or current_card == 'break3':
+    elif used_card[0] == cards.COLOR_CHANGER:
+        if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == cards.KING or \
+                current_card == cards.PLUS3 or current_card == cards.BREAK3:
             return False
         else:
             print("You choose an invalid card! If you don't have valid card please type 'none'. ")
             return True
-    elif current_card == 'king':
+    elif current_card == cards.KING:
         return False
-    elif current_card == 'break3':
-        if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == 'king' or \
-                current_card == 'plus3' or current_card == 'color_changer':
+    elif current_card == cards.BREAK3:
+        if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == cards.KING or \
+                current_card == cards.PLUS3 or current_card == cards.COLOR_CHANGER:
             return False
     else:
         print("You choose an invalid card! If you don't have valid card please type 'none'. ")
@@ -193,8 +194,8 @@ def plus3(players, players_cards, current_player , used_card, cards_deck):
                     players_cards[j].append(cards_deck[0])
                     del cards_deck[0]
     else:
-        del players_cards[players.index(player)][players_cards[players.index(player)].index('break3')]
-        used_card.insert(0, 'break3')
+        del players_cards[players.index(player)][players_cards[players.index(player)].index(cards.BREAK3)]
+        used_card.insert(0, cards.BREAK3)
         for i in range(0, 3):
             players_cards[current_player].append(cards_deck[0])
             del cards_deck[0]
@@ -203,9 +204,9 @@ def plus3(players, players_cards, current_player , used_card, cards_deck):
 
 
 def step_zero_case(used_card, players_cards, current_player, card, cards_deck, step, color):
-    if card[0:4] == 'plus':
+    if card[0:4] == cards.PLUS:
         new_card = handle_user_input('please choose card again: ')
-        if new_card[0:4] == 'plus':
+        if new_card[0:4] == cards.PLUS:
             used_card.insert(0, new_card)
             del players_cards[current_player][players_cards[current_player].index(new_card)]
             card = new_card
@@ -230,9 +231,9 @@ def step_zero_case(used_card, players_cards, current_player, card, cards_deck, s
             current_step, color = card_rule(card, color)
             return used_card, players_cards, current_step, cards_deck, color
 
-    elif card == 'king':
+    elif card == cards.KING:
         new_card = handle_user_input('please choose card again: ')
-        if new_card == 'king':
+        if new_card == cards.KING:
             used_card, players_cards, current_step, cards_deck, new_color = step_zero_case(used_card, players_cards,
                                                                                            current_player, card,
                                                                                            cards_deck, step, color)
@@ -244,24 +245,24 @@ def step_zero_case(used_card, players_cards, current_player, card, cards_deck, s
             return used_card, players_cards, current_step, cards_deck, color
 
     else:  # taki/super_taki
-        if card[0:4] == 'taki':
+        if card[0:4] == cards.TAKI:
             new_color = card[-1]
-        if card[6:11] == 'taki':
-            new_color =color
+        if card[6:11] == cards.TAKI:
+            new_color = color
         status = 'continue'
-        while status != 'stop':
+        while status != cards.STOP:
             flag = True
             while flag:
                 new_card = handle_user_input('please choose card again: ')
                 if new_card == 'none':
-                    status = 'stop'
+                    status = cards.STOP
                     flag = False
                     new_card = 'close'
                     current_step = step
                 elif new_card != 'close':
                     flag = checking_legality(used_card, card, new_color)
                 else:
-                    status = 'stop'
+                    status = cards.STOP
                     flag = False
                     current_step = step
             if new_card != 'close':
@@ -284,7 +285,7 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
         if used_card[1][0] == '2':
             print('the current card is ' + used_card[1])
             print('But someone has already been punished for not putting a card of 2! and the color is ', color)
-        elif used_card[1] == 'break3':
+        elif used_card[1] == cards.BREAK3:
             print('the current card is ' + used_card[1])
             print('But someone has already been punished for not putting a card of break3! and the color is ', color)
         else:
@@ -319,11 +320,11 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
 
     # checking the option that the current player won
     if len(players_cards[current_player]) == 0:
-        if current_card[0:4] == 'plus':
+        if current_card[0:4] == cards.PLUS:
             players_cards[current_player].append(cards_deck[0])
             del cards_deck[0]
-        elif current_card == 'break3':
-            if used_card[1] == 'plus3':
+        elif current_card == cards.BREAK3:
+            if used_card[1] == cards.PLUS3:
                 return False, current_player, 0, players_cards, cards_deck, used_card, color
             else:
                 players_cards[current_player].extend(cards_deck[0:3])
@@ -332,9 +333,9 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
             return False, current_player, 0, players_cards, cards_deck, used_card, color
 
     # plus3 case
-    if current_card == 'plus3':
+    if current_card == cards.PLUS3:
         used_card, players_cards, cards_deck = plus3(players, players_cards, current_player, used_card, cards_deck)
-    if current_card == 'break3':
+    if current_card == cards.BREAK3:
         for i in range(0, 3):
             players_cards[current_player].append(cards_deck[0])
             del cards_deck[0]

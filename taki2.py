@@ -114,38 +114,38 @@ def card_rule(card, color):
     return current_step, new_color
 
 
-def checking_legality(used_card, current_card, color):
-    if used_card[0] == "done":
-        if len(used_card) > 1 and used_card[1][0] == "2":
+def checking_legality(used_cards, current_card, color):
+    if used_cards[0] == "done":
+        if len(used_cards) > 1 and used_cards[1][0] == "2":
             if current_card[0] == "2" or current_card == cards.KING:
                 return False
             elif current_card[-1] == color or current_card == cards.SUPER_TAKI or \
                     current_card == cards.COLOR_CHANGER or current_card == cards.KING:
                 return False
-        elif len(used_card) > 1 and (used_card[1][0] == cards.PLUS3 or used_card[1][0] == cards.BREAK3):
+        elif len(used_cards) > 1 and (used_cards[1][0] == cards.PLUS3 or used_cards[1][0] == cards.BREAK3):
             if current_card[-1] == color or current_card == cards.SUPER_TAKI or \
                     current_card == cards.COLOR_CHANGER or current_card == cards.KING:
                 return False
         else:
             print("You choose an invalid card! If you don't have valid card please type 'none'.")
             return True
-    elif used_card[0][0].isnumeric():
-        if used_card[0][0] == current_card[0] or used_card[0][-1] == current_card[-1] or \
-                current_card == cards.SUPER_TAKI or current_card == cards.COLOR_CHANGER or current_card == cards.KING \
-                or current_card == cards.PLUS3 or current_card == cards.BREAK3:
+    elif used_cards[0][0].isnumeric():
+        if used_cards[0][0] == current_card[0] or used_cards[0][-1] == current_card[-1] or used_cards[0][0] == color \
+                or current_card == cards.SUPER_TAKI or current_card == cards.COLOR_CHANGER or \
+                current_card == cards.KING or current_card == cards.PLUS3 or current_card == cards.BREAK3:
             return False
         else:
             print("You choose an invalid card! If you don't have valid card please type 'none'.")
             return True
-    elif used_card[0][-2] == '_':
-        if used_card[0][-1] == current_card[-1] or used_card[0][0:-2] == current_card[0:-2] or current_card == '' or \
-                current_card == cards.COLOR_CHANGER or current_card == cards.KING or current_card == cards.PLUS3 or \
-                current_card == cards.BREAK3:
+    elif used_cards[0][-2] == '_':
+        if used_cards[0][-1] == current_card[-1] or used_cards[0][0:-2] == current_card[0:-2] or \
+                used_cards[0][0] == color or current_card == '' or current_card == cards.COLOR_CHANGER or \
+                current_card == cards.KING or current_card == cards.PLUS3 or current_card == cards.BREAK3:
             return False
         else:
             print("You choose an invalid card! If you don't have valid card please type 'none'.")
             return True
-    elif used_card[0] == cards.COLOR_CHANGER:
+    elif used_cards[0] == cards.COLOR_CHANGER:
         if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == cards.KING or \
                 current_card == cards.PLUS3 or current_card == cards.BREAK3:
             return False
@@ -286,13 +286,13 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
             print("The current card is " + used_card[1])
             print("But someone has already been punished for not putting a card of break3! and the color is ", color)
         else:
-            print("the current card is " + used_card[1])
+            print("The current card is " + used_card[1])
             print("But someone has already been punished for not putting a card of plus3! and the color is ", color)
-
     else:
-        print("the current card is " + used_card[0])
+        print("The current card is " + used_card[0])
         if used_card[0][-2] != "_":
             print("The color is ", color)
+
     flag = True
     while flag:
         current_card = handle_user_input(players[current_player] + " please choose a card: ")
@@ -302,7 +302,8 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
             if current_card in players_cards[current_player]:
                 flag = checking_legality(used_card, current_card, color)
             else:
-                print("The card you selected does not exist in your deck")
+                print("The card you selected does not exist in your deck, if you don't have valid card please type "
+                      "'none'")
     if current_card == "none":
         players_cards, cards_deck = plus2(used_card, cards_deck)
         current_step = step
@@ -344,62 +345,70 @@ def play(players, current_player, step, players_cards, cards_deck, used_card, co
                                                                                    cards_deck, step, color)
     # regular rotation
     if step == 1:
-        # the player doesn't have fit card
-        if current_card == "none":
-            if current_player == len(players) - 1:
-                return True, 0, 1, players_cards, cards_deck, used_card, color
-            else:
-                return True, current_player + step, 1, players_cards, cards_deck, used_card, color
-
-        # stop card case
-        if current_step == STEP_SKIP_NEXT:
-            if current_player + current_step == len(players):
-                return True, 0, 1, players_cards, cards_deck, used_card, color
-            elif current_player + current_step > len(players):
-                return True, 1, 1, players_cards, cards_deck, used_card, color
-            else:
-                return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
-
-        # change direction card case
-        elif current_step == STEP_MOVE_BACKWARD:
-            if current_player == 0:
-                return True, -1, -1, players_cards, cards_deck, used_card, color
-            else:
-                return True, current_player + current_step, -1, players_cards, cards_deck, used_card, color
-
-        else:  # current_step == 1 == STEP_MOVE_FORWARD
-            if current_player == len(players) - 1:
-                return True, 0, 1, players_cards, cards_deck, used_card, color
-            else:
-                return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
+        return regular_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color)
 
     # opposite rotation step=-1
     else:
-        if current_card == "none":
-            if current_player == STEP_STAY_CURRENT_PLAYER:
-                return True, len(players) - 1, -1, players_cards, cards_deck, used_card, color
-            else:
-                return True, current_player + step, -1, players_cards, cards_deck, used_card, color
-        # stop card case
-        if current_step == STEP_SKIP_NEXT:
-            if current_player == 0:
-                return True, -2, -1, players_cards, cards_deck, used_card, color
-            elif current_player == 1:
-                return True, -1, -1, players_cards, cards_deck, used_card, color
-            else:
-                return True, current_player - current_step, -1, players_cards, cards_deck, used_card, color
-        # change direction card case
-        elif current_step == STEP_MOVE_BACKWARD:
-            if current_player == len(players) - 1:
-                return True, 0, -1, players_cards, cards_deck, used_card, color
-            else:
-                return True, current_player - current_step, 1, players_cards, cards_deck, used_card, color
+        return opposite_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color)
 
-        else:  # current_step == 1 == STEP_MOVE_FORWARD
-            if current_player == 0:
-                return True, len(players) - current_step, -1, players_cards, cards_deck, used_card, color
-            else:
-                return True, current_player - current_step, -1, players_cards, cards_deck, used_card, color
+
+def regular_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color):
+    # the player doesn't have fit card
+    if current_card == "none":
+        if current_player == len(players) - 1:
+            return True, 0, 1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player + step, 1, players_cards, cards_deck, used_card, color
+
+    # stop card case
+    if current_step == STEP_SKIP_NEXT:
+        if current_player + current_step == len(players):
+            return True, 0, 1, players_cards, cards_deck, used_card, color
+        elif current_player + current_step > len(players):
+            return True, 1, 1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
+
+    # change direction card case
+    elif current_step == STEP_MOVE_BACKWARD:
+        if current_player == 0:
+            return True, -1, -1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player + current_step, -1, players_cards, cards_deck, used_card, color
+
+    else:  # current_step == 1 == STEP_MOVE_FORWARD
+        if current_player == len(players) - 1:
+            return True, 0, 1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
+
+
+def opposite_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color):
+    if current_card == "none":
+        if current_player == STEP_STAY_CURRENT_PLAYER:
+            return True, len(players) - 1, -1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player + step, -1, players_cards, cards_deck, used_card, color
+    # stop card case
+    if current_step == STEP_SKIP_NEXT:
+        if current_player == 0:
+            return True, -2, -1, players_cards, cards_deck, used_card, color
+        elif current_player == 1:
+            return True, -1, -1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player - current_step, -1, players_cards, cards_deck, used_card, color
+    # change direction card case
+    elif current_step == STEP_MOVE_BACKWARD:
+        if current_player == len(players) - 1:
+            return True, 0, -1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player - current_step, 1, players_cards, cards_deck, used_card, color
+
+    else:  # current_step == 1 == STEP_MOVE_FORWARD
+        if current_player == 0:
+            return True, len(players) - current_step, -1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player - current_step, -1, players_cards, cards_deck, used_card, color
 
 
 if __name__ == "__main__":
@@ -414,7 +423,7 @@ if __name__ == "__main__":
         cards_deck.append(current_card)
         current_card = cards_deck[0]
     del cards_deck[0]
-    used_card = [current_card]
+    used_cards = [current_card]
     print("The opening card is " + current_card)
 
     current_player = 0

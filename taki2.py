@@ -94,11 +94,11 @@ def card_rule(card, color):
     elif card[0:4] == cards.PLUS or card[0:4] == cards.TAKI:
         current_step = STEP_STAY_CURRENT_PLAYER
         new_color = card[-1]
-    elif card == cards.SUPER_TAKI or card == cards.COLOR_CHANGER:
-        if card == cards.SUPER_TAKI:
-            current_step = STEP_STAY_CURRENT_PLAYER
-        else:
-            current_step = STEP_MOVE_FORWARD
+    elif card == cards.SUPER_TAKI:
+        current_step = STEP_STAY_CURRENT_PLAYER
+        new_color = color
+    elif card == cards.COLOR_CHANGER:
+        current_step = STEP_MOVE_FORWARD
         new_color = None
         while new_color not in AVAILABLE_COLORS:
             if new_color is not None:
@@ -270,6 +270,7 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
             new_color = card[-1]
         if card[6:11] == cards.TAKI:
             new_color = color
+            print("The color is ", new_color)
         status = "continue"
         while status != 'stop':
             flag = True

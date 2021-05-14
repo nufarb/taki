@@ -258,11 +258,7 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
                                                                                             current_player, new_card,
                                                                                             cards_deck, step, color)
             return used_cards, players_cards, current_step, cards_deck, new_color
-
         else:
-            current_step, color = card_rule(new_card, color)
-            del players_cards[current_player][players_cards[current_player].index(new_card)]
-            used_cards.insert(0, new_card)
             return used_cards, players_cards, current_step, cards_deck, color
 
     else:  # taki/super_taki

@@ -424,14 +424,14 @@ def regular_rotation(players, current_player, step, current_step, players_cards,
 
 def opposite_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color, current_card):
     if current_card == "none":
-        if current_player == STEP_STAY_CURRENT_PLAYER:
-            return True, len(players) - 1, -1, players_cards, cards_deck, used_card, color
+        if current_player == 0:
+            return True, - 1, -1, players_cards, cards_deck, used_card, color
         elif len(players) == abs(current_player - current_step) or len(players) == abs(current_player + step):
             return True, 0, -1, players_cards, cards_deck, used_card, color
         else:
             return True, current_player + step, -1, players_cards, cards_deck, used_card, color
     # stop card case
-    if current_step == STEP_SKIP_NEXT:
+    elif current_step == STEP_SKIP_NEXT:
         if current_player == 0:
             if len(players) == abs(current_player - current_step):
                 return True, 0, -1, players_cards, cards_deck, used_card, color
@@ -465,7 +465,7 @@ if __name__ == "__main__":
 
     print("Lets start to play!")
     current_card = cards_deck[0]
-    while current_card[0].isalpha():
+    while current_card[0].isalpha() or current_card[0] == '2':
         del cards_deck[0]
         cards_deck.append(current_card)
         current_card = cards_deck[0]

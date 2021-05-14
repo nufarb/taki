@@ -292,12 +292,10 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
                 else:
                     status = 'stop'
                     flag = False
-                    current_step = step
             if new_card != "close":
                 card = new_card
                 used_cards.insert(0, new_card)
                 del players_cards[current_player][players_cards[current_player].index(card)]
-                # current_step, new_color = card_rule(new_card, color)
         while current_step == STEP_STAY_CURRENT_PLAYER:
             used_cards, players_cards, current_step, cards_deck, new_color = step_zero_case(used_cards, card, step, color)
             return used_cards, players_cards, current_step, cards_deck, new_color
@@ -452,7 +450,7 @@ def opposite_rotation(players, current_player, step, current_step, players_cards
         if current_player == len(players) - 1:
             return True, 0, -1, players_cards, cards_deck, used_card, color
         else:
-            return True, current_player - current_step, 1, players_cards, cards_deck, used_card, color
+            return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
 
     else:  # current_step == 1 == STEP_MOVE_FORWARD
         if current_player == 0:

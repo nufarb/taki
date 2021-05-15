@@ -215,6 +215,8 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
         while flag:
             if new_card in players_cards[current_player]:
                 flag = checking_legality(used_cards, new_card, color)
+            elif new_card == 'none':
+                flag = False
             else:
                 print("The card you selected does not exist in your deck, if you don't have valid card please type "
                       "'none'")
@@ -270,12 +272,12 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
             new_color = color
             print("The color is ", new_color)
         status = "continue"
-        while status != 'stop':
+        while status != "stop":
             flag = True
             while flag:
                 new_card = handle_user_input("Please choose card again: ")
                 if new_card == "none":
-                    status = 'stop'
+                    status = "stop"
                     flag = False
                     new_card = "close"
                     current_step = step
@@ -290,6 +292,8 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
                 else:
                     status = 'stop'
                     flag = False
+                    if used_cards[0][0:4] == cards.TAKI or used_cards[0] == cards.SUPER_TAKI:
+                        current_step = STEP_MOVE_FORWARD
             if new_card != "close":
                 card = new_card
                 used_cards.insert(0, new_card)

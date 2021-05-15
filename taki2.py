@@ -117,10 +117,9 @@ def card_rule(card, color):
 def checking_legality(used_cards, current_card, color):
     if used_cards[0] == "done":
         if len(used_cards) > 1 and used_cards[1][0] == "2":
-            if current_card[0] == "2" or current_card == cards.KING:
-                return False
-            elif current_card[-1] == color or current_card == cards.SUPER_TAKI or \
-                    current_card == cards.COLOR_CHANGER or current_card == cards.KING or current_card == cards.BREAK3:
+            if current_card[0] == "2" or current_card == cards.KING or current_card[-1] == color or \
+                    current_card == cards.SUPER_TAKI or current_card == cards.COLOR_CHANGER or \
+                    current_card == cards.KING or current_card == cards.BREAK3:
                 return False
         elif len(used_cards) > 1 and (used_cards[1] == cards.PLUS3 or used_cards[1] == cards.BREAK3):
             if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == cards.BREAK3 or \
@@ -175,6 +174,9 @@ def plus2(used_cards, cards_deck, players_cards, current_player):
         for i in range(len(used_cards)):
             if used_cards[i][0] == "2":
                 count += 2
+            elif used_cards[i] == 'done':
+                del used_cards[i]
+                break
             else:
                 break
         while count > 0:
@@ -185,7 +187,7 @@ def plus2(used_cards, cards_deck, players_cards, current_player):
     else:
         players_cards[current_player].append(cards_deck[0])
         del cards_deck[0]
-    return players_cards, cards_deck
+    return players_cards, cards_deck, used_cards
 
 
 def plus3(players, players_cards, current_player, used_cards, cards_deck):
@@ -312,13 +314,19 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
                 print("The card you selected does not exist in your deck, if you don't have valid card please type "
                       "'none'")
     if current_card == "none":
-        players_cards, cards_deck = plus2(used_cards, cards_deck, players_cards, current_player)
+        players_cards, cards_deck, used_cards = plus2(used_cards, cards_deck, players_cards, current_player)
         current_step = step
     elif used_cards[0] == "done":
-        del used_cards[0]
-        del players_cards[current_player][players_cards[current_player].index(current_card)]
-        used_cards.insert(0, current_card)
-        current_step, color = card_rule(current_card, color)
+        if (current_card[0] != '2' and used_cards[1] == '2') or (current_card == cards.BREAK3 and
+                                                                 used_cards[1] == cards.PLUS3):
+            del used_cards[0]
+            del players_cards[current_player][players_cards[current_player].index(current_card)]
+            used_cards.insert(0, current_card)
+            current_step, color = card_rule(current_card, color)
+        else:
+            del players_cards[current_player][players_cards[current_player].index(current_card)]
+            used_cards.insert(0, current_card)
+            current_step, color = card_rule(current_card, color)
     else:
         del players_cards[current_player][players_cards[current_player].index(current_card)]
         used_cards.insert(0, current_card)

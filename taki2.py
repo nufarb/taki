@@ -132,6 +132,7 @@ def checking_legality(used_cards, current_card, color):
         if used_cards[0][0] == "2":
             if used_cards[0][0] == current_card[0] or current_card == cards.KING or current_card == cards.PLUS3:
                 return False
+
             else:
                 print("You can't put this card on '2'! If you don't have valid card please type 'none'.")
                 return True
@@ -288,7 +289,7 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
                     else:
                         print(
                             "The card you selected does not exist in your deck, if you don't have valid card please "
-                            "type 'none'")
+                            "type 'close', to close the taki card")
                 else:
                     status = 'stop'
                     flag = False

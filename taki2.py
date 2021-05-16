@@ -94,7 +94,7 @@ def card_rule(card, color):
     elif card[0:4] == cards.PLUS or card[0:4] == cards.TAKI:
         current_step = STEP_STAY_CURRENT_PLAYER
         new_color = card[-1]
-    elif card == cards.SUPER_TAKI:
+    elif card == cards.SUPER_TAKI or card == cards.KING:
         current_step = STEP_STAY_CURRENT_PLAYER
         new_color = color
     elif card == cards.COLOR_CHANGER:
@@ -105,9 +105,6 @@ def card_rule(card, color):
                 print("The color \"{}\" is not available, here are your options: {}".
                       format(new_color, AVAILABLE_COLORS))
             new_color = handle_user_input("Please choose the color you want: ")
-    elif card == cards.KING:
-        current_step = STEP_STAY_CURRENT_PLAYER
-        new_color = color
     else:
         current_step = 1
         new_color = card[-1]
@@ -336,13 +333,9 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
         if (current_card[0] != "2" and used_cards[1] == "2") or (current_card == cards.BREAK3 and
                                                                  used_cards[1] == cards.PLUS3):
             del used_cards[0]
-            del players_cards[current_player][players_cards[current_player].index(current_card)]
-            used_cards.insert(0, current_card)
-            current_step, color = card_rule(current_card, color)
-        else:
-            del players_cards[current_player][players_cards[current_player].index(current_card)]
-            used_cards.insert(0, current_card)
-            current_step, color = card_rule(current_card, color)
+        del players_cards[current_player][players_cards[current_player].index(current_card)]
+        used_cards.insert(0, current_card)
+        current_step, color = card_rule(current_card, color)
     else:
         del players_cards[current_player][players_cards[current_player].index(current_card)]
         used_cards.insert(0, current_card)
@@ -436,6 +429,7 @@ def regular_rotation(players, current_player, step, current_step, players_cards,
     elif current_step == STEP_MOVE_BACKWARD:
         if current_player == 0:
             return True, -1, -1, players_cards, cards_deck, used_card, color
+
         else:
             return True, current_player + current_step, -1, players_cards, cards_deck, used_card, color
 
@@ -469,13 +463,14 @@ def opposite_rotation(players, current_player, step, current_step, players_cards
     elif current_step == STEP_MOVE_BACKWARD:
         if current_player == len(players) - 1:
             return True, 0, -1, players_cards, cards_deck, used_card, color
+        elif current_player < 0:
+            return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
         else:
             return True, current_player - current_step, 1, players_cards, cards_deck, used_card, color
 
     else:  # current_step == 1 == STEP_MOVE_FORWARD
         if current_player == 0:
             return True, len(players) - current_step, -1, players_cards, cards_deck, used_card, color
-
         elif len(players) == abs(current_player - current_step):
             return True, 0, -1, players_cards, cards_deck, used_card, color
         else:

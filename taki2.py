@@ -106,7 +106,7 @@ def card_rule(card, color):
                       format(new_color, AVAILABLE_COLORS))
             new_color = handle_user_input("Please choose the color you want: ")
     else:
-        current_step = 1
+        current_step = STEP_MOVE_FORWARD
         new_color = card[-1]
     return current_step, new_color
 

@@ -175,7 +175,7 @@ def plus2(used_cards, cards_deck, players_cards, current_player):
         for i in range(len(used_cards)):
             if used_cards[i][0] == "2":
                 count += 2
-            elif used_cards[i] == 'done':
+            elif used_cards[i] == "done":
                 del used_cards[i]
                 break
             else:
@@ -195,11 +195,8 @@ def plus3(players, players_cards, current_player, used_cards, cards_deck):
     player = handle_user_input("If you have break3 card please enter your name if no one have break3 enter 'none': ")
     flag = True
     while flag:
-        if player == 'none':
+        if player == "none":
             flag = False
-        elif player == players[current_player]:
-            player = handle_user_input("The player that put the card plus3 cannot put the break3, if no one have break3"
-                                       " type 'none': ")
         elif cards.BREAK3 not in players_cards[players.index(player)]:
             player = handle_user_input("This player don't have break3 if no one have break3 type 'none': ")
         else:
@@ -210,6 +207,9 @@ def plus3(players, players_cards, current_player, used_cards, cards_deck):
                 if players[j] != players[current_player]:
                     players_cards[j].append(cards_deck[0])
                     del cards_deck[0]
+    elif player == players[current_player]:
+        del players_cards[players.index(player)][players_cards[players.index(player)].index(cards.BREAK3)]
+        used_cards.insert(0, cards.BREAK3)
     else:
         del players_cards[players.index(player)][players_cards[players.index(player)].index(cards.BREAK3)]
         used_cards.insert(0, cards.BREAK3)
@@ -227,7 +227,7 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
         while flag:
             if new_card in players_cards[current_player]:
                 flag = checking_legality(used_cards, new_card, color)
-            elif new_card == 'none':
+            elif new_card == "none":
                 flag = False
             else:
                 print("The card you selected does not exist in your deck, if you don't have valid card please type "
@@ -302,7 +302,7 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
                             "The card you selected does not exist in your deck, if you don't have valid card please "
                             "type 'close', to close the taki card")
                 else:
-                    status = 'stop'
+                    status = "stop"
                     flag = False
                     if used_cards[0][0:4] == cards.TAKI or used_cards[0] == cards.SUPER_TAKI:
                         current_step = STEP_MOVE_FORWARD
@@ -333,7 +333,7 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
         players_cards, cards_deck, used_cards = plus2(used_cards, cards_deck, players_cards, current_player)
         current_step = step
     elif used_cards[0] == "done":
-        if (current_card[0] != '2' and used_cards[1] == '2') or (current_card == cards.BREAK3 and
+        if (current_card[0] != "2" and used_cards[1] == "2") or (current_card == cards.BREAK3 and
                                                                  used_cards[1] == cards.PLUS3):
             del used_cards[0]
             del players_cards[current_player][players_cards[current_player].index(current_card)]

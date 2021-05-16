@@ -193,6 +193,17 @@ def plus2(used_cards, cards_deck, players_cards, current_player):
 
 def plus3(players, players_cards, current_player, used_cards, cards_deck):
     player = handle_user_input("If you have break3 card please enter your name if no one have break3 enter 'none': ")
+    flag = True
+    while flag:
+        if player == 'none':
+            flag = False
+        elif player == players[current_player]:
+            player = handle_user_input("The player that put the card plus3 cannot put the break3, if no one have break3"
+                                       " type 'none': ")
+        elif cards.BREAK3 not in players_cards[players.index(player)]:
+            player = handle_user_input("This player don't have break3 if no one have break3 type 'none': ")
+        else:
+            flag = False
     if player == "none":
         for i in range(0, 3):
             for j in range(len(players)):

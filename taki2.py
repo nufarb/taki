@@ -161,7 +161,7 @@ def checking_legality(used_cards, current_card, color):
 
 
 def plus2(used_cards, cards_deck, players_cards, current_player):
-    if used_cards[0][0] == "2":
+    if used_cards[0][0] == "2" or cards.PLUS3:
         count = 0
         for i in range(len(used_cards)):
             if used_cards[i][0] == "2":
@@ -195,6 +195,8 @@ def plus3(players, players_cards, current_player, used_cards, cards_deck):
         else:
             flag = False
     if player == "none":
+        if used_cards[0][0] == '2':
+            return used_cards, players_cards, cards_deck
         for i in range(0, 3):
             for j in range(len(players)):
                 if players[j] != players[current_player]:
@@ -205,10 +207,13 @@ def plus3(players, players_cards, current_player, used_cards, cards_deck):
         used_cards.insert(0, cards.BREAK3)
     else:
         del players_cards[players.index(player)][players_cards[players.index(player)].index(cards.BREAK3)]
+        if used_cards[1][0] == '2':
+            players_cards, cards_deck, used_cards = plus2(used_cards, cards_deck, players_cards, current_player)
+        else:
+            for i in range(0, 3):
+                players_cards[current_player].append(cards_deck[0])
+                del cards_deck[0]
         used_cards.insert(0, cards.BREAK3)
-        for i in range(0, 3):
-            players_cards[current_player].append(cards_deck[0])
-            del cards_deck[0]
     used_cards.insert(0, "done")
     return used_cards, players_cards, cards_deck
 
@@ -326,8 +331,8 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
         players_cards, cards_deck, used_cards = plus2(used_cards, cards_deck, players_cards, current_player)
         current_step = step
     elif used_cards[0] == "done":
-        if (current_card[0] != "2" and used_cards[1] == "2") or (current_card == cards.BREAK3 and
-                                                                 used_cards[1] == cards.PLUS3):
+        if ((current_card !=cards.PLUS3 or current_card[0] != "2") and used_cards[1] == "2") or \
+                (current_card == cards.BREAK3 and used_cards[1] == cards.PLUS3):
             del used_cards[0]
         del players_cards[current_player][players_cards[current_player].index(current_card)]
         used_cards.insert(0, current_card)

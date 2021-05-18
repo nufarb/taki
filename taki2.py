@@ -41,19 +41,19 @@ def sets_players():
     list_players = []
     while len(list_players) < num_players:
         name = handle_user_input("Please enter your name: ")
-        flag = True
-        while flag:
+        sets_players_flag = True
+        while sets_players_flag:
             if name in list_players:
                 answer = handle_user_input("{} is already in the list name are you sure you want to players to"
                                            " have the same name [y/n]?".format(name))
                 if answer == "y":
                     list_players.append(name)
-                    flag = False
+                    sets_players_flag = False
                 else:
                     name = handle_user_input("Please enter your name: ")
             else:
                 list_players.append(name)
-                flag = False
+                sets_players_flag = False
     return list_players, num_players
 
 
@@ -71,7 +71,7 @@ def generate_cards_deck():
 
 
 def game_boot(cards, num_players):
-    players_cards = [[] for x in range(num_players)]
+    players_cards = [[] for _ in range(num_players)]
     counter = 0
     while counter < 8:
         for i in range(number_of_players):
@@ -186,12 +186,12 @@ def plus2(used_cards, cards_deck, players_cards, current_player):
 
 def plus3(players, players_cards, current_player, used_cards, cards_deck):
     player = handle_user_input("If you have break3 card please enter your name if no one have break3 enter 'none': ")
-    flag = True
-    while flag:
+    plus3_flag = True
+    while plus3_flag:
         if cards.BREAK3 not in players_cards[players.index(player)]:
             player = handle_user_input("This player don't have break3 if no one have break3 type 'none': ")
         else:
-            flag = False
+            plus3_flag = False
     if player == "none":
         if used_cards[0][0] == '2':
             return used_cards, players_cards, cards_deck
@@ -314,6 +314,7 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
 
 
 def play(players, current_player, step, players_cards, cards_deck, used_cards, color):
+    global current_card
     play_prints(used_cards, color, players, current_player, players_cards)
     flag = True
     while flag:

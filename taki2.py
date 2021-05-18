@@ -115,7 +115,7 @@ def checking_legality(used_cards, current_card, color):
     if used_cards[0] == "done":
         if len(used_cards) > 1 and used_cards[1][0] == "2":
             if current_card[0] == "2" or current_card[-1] == color or current_card == cards.SUPER_TAKI or \
-                    current_card == cards.BREAK3 or current_card == cards.COLOR_CHANGER or current_card == cards.KING :
+                    current_card == cards.BREAK3 or current_card == cards.COLOR_CHANGER or current_card == cards.KING:
                 return False
         elif len(used_cards) > 1 and (used_cards[1] == cards.PLUS3 or used_cards[1] == cards.BREAK3):
             if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == cards.BREAK3 or \
@@ -188,9 +188,7 @@ def plus3(players, players_cards, current_player, used_cards, cards_deck):
     player = handle_user_input("If you have break3 card please enter your name if no one have break3 enter 'none': ")
     flag = True
     while flag:
-        if player == "none":
-            flag = False
-        elif cards.BREAK3 not in players_cards[players.index(player)]:
+        if cards.BREAK3 not in players_cards[players.index(player)]:
             player = handle_user_input("This player don't have break3 if no one have break3 type 'none': ")
         else:
             flag = False
@@ -230,7 +228,7 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
             else:
                 print("The card you selected does not exist in your deck, if you don't have valid card please type "
                       "'none'")
-            if flag == True:
+            if flag:
                 new_card = handle_user_input("Please choose card again: ")
         if new_card != "none":
             del players_cards[current_player][players_cards[current_player].index(new_card)]
@@ -309,7 +307,8 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
                 used_cards.insert(0, new_card)
                 del players_cards[current_player][players_cards[current_player].index(card)]
         while current_step == STEP_STAY_CURRENT_PLAYER:
-            used_cards, players_cards, current_step, cards_deck, new_color = step_zero_case(used_cards, card, step, color)
+            used_cards, players_cards, current_step, cards_deck, new_color = step_zero_case(used_cards, card, step,
+                                                                                            color)
             return used_cards, players_cards, current_step, cards_deck, new_color
         return used_cards, players_cards, current_step, cards_deck, new_color
 
@@ -329,9 +328,9 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
                       "'none'")
     if current_card == "none":
         players_cards, cards_deck, used_cards = plus2(used_cards, cards_deck, players_cards, current_player)
-        current_step = step
+        current_step = STEP_MOVE_FORWARD
     elif used_cards[0] == "done":
-        if ((current_card !=cards.PLUS3 or current_card[0] != "2") and used_cards[1] == "2") or \
+        if ((current_card != cards.PLUS3 or current_card[0] != "2") and used_cards[1] == "2") or \
                 (current_card == cards.BREAK3 and used_cards[1] == cards.PLUS3):
             del used_cards[0]
         del players_cards[current_player][players_cards[current_player].index(current_card)]
@@ -345,12 +344,13 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
     # checking the option that the current player won
     if len(players_cards[current_player]) == 0:
         flag, cards_deck = checking_winning(players_cards, current_player, cards_deck, used_cards, current_card)
-        if flag == False:
+        if not flag:
             return flag, current_player, 0, players_cards, cards_deck, used_cards, color
 
     # plus3 case
     if current_card == cards.PLUS3:
         used_cards, players_cards, cards_deck = plus3(players, players_cards, current_player, used_cards, cards_deck)
+    # break3 case
     if current_card == cards.BREAK3:
         for i in range(0, 3):
             players_cards[current_player].append(cards_deck[0])
@@ -361,17 +361,20 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
         used_cards, players_cards, current_step, cards_deck, color = step_zero_case(used_cards, players_cards,
                                                                                     current_player, current_card,
                                                                                     cards_deck, step, color)
+    # checking the option that the current player won
     if len(players_cards[current_player]) == 0:
         flag, cards_deck = checking_winning(players_cards, current_player, cards_deck, used_cards, current_card)
-        if flag == False:
+        if not flag:
             return flag, current_player, 0, players_cards, cards_deck, used_cards, color
+
     # regular rotation
     if step == 1:
-        return regular_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_cards, color, current_card)
-
+        return regular_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_cards,
+                                color, current_card)
     # opposite rotation step=-1
     else:
-        return opposite_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_cards, color, current_card)
+        return opposite_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_cards,
+                                 color, current_card)
 
 
 def play_prints(used_cards, color, players, current_player, players_cards):
@@ -398,25 +401,27 @@ def checking_winning(players_cards, current_player, cards_deck, used_cards, curr
     if current_card[0:4] == cards.PLUS:
         players_cards[current_player].append(cards_deck[0])
         del cards_deck[0]
+        flag = True
     elif current_card == cards.BREAK3:
         if used_cards[1] == cards.PLUS3:
             flag = False
         else:
             players_cards[current_player].extend(cards_deck[0:3])
             del cards_deck[0:3]
+            flag = True
     else:
         flag = False
     return flag, cards_deck
 
 
-def regular_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color, current_card):
+def regular_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color,
+                     current_card):
     # the player doesn't have fit card
     if current_card == "none":
         if current_player == len(players) - 1:
             return True, 0, 1, players_cards, cards_deck, used_card, color
         else:
             return True, current_player + step, 1, players_cards, cards_deck, used_card, color
-
     # stop card case
     elif current_step == STEP_SKIP_NEXT:
         if current_player + current_step == len(players):
@@ -425,23 +430,24 @@ def regular_rotation(players, current_player, step, current_step, players_cards,
             return True, 1, 1, players_cards, cards_deck, used_card, color
         else:
             return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
-
     # change direction card case
     elif current_step == STEP_MOVE_BACKWARD:
         if current_player == 0:
             return True, -1, -1, players_cards, cards_deck, used_card, color
-
+        elif current_player < 0:
+            return True, current_player - current_step, -1, players_cards, cards_deck, used_card, color
         else:
             return True, current_player + current_step, -1, players_cards, cards_deck, used_card, color
-
-    else:  # current_step == 1 == STEP_MOVE_FORWARD
+    # current_step == 1 == STEP_MOVE_FORWARD
+    else:
         if current_player == len(players) - 1:
             return True, 0, 1, players_cards, cards_deck, used_card, color
         else:
             return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
 
 
-def opposite_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color, current_card):
+def opposite_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_card, color,
+                      current_card):
     if current_card == "none":
         if current_player == 0:
             return True, - 1, -1, players_cards, cards_deck, used_card, color
@@ -462,14 +468,14 @@ def opposite_rotation(players, current_player, step, current_step, players_cards
             return True, current_player - current_step, -1, players_cards, cards_deck, used_card, color
     # change direction card case
     elif current_step == STEP_MOVE_BACKWARD:
-        if current_player == len(players) - 1:
+        if current_player == len(players) + STEP_MOVE_BACKWARD:
             return True, 0, -1, players_cards, cards_deck, used_card, color
         elif current_player < 0:
             return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
         else:
             return True, current_player - current_step, 1, players_cards, cards_deck, used_card, color
-
-    else:  # current_step == 1 == STEP_MOVE_FORWARD
+    # current_step == 1 == STEP_MOVE_FORWARD
+    else:
         if current_player == 0:
             return True, len(players) - current_step, -1, players_cards, cards_deck, used_card, color
         elif len(players) == abs(current_player - current_step):
@@ -499,7 +505,7 @@ if __name__ == "__main__":
     color = current_card[-1]
     while flag:
         flag, current_player, step, players_cards, cards_deck, used_cards, color = play(players, current_player, step,
-                                                                                       players_cards, cards_deck,
-                                                                                       used_cards, color)
+                                                                                        players_cards, cards_deck,
+                                                                                        used_cards, color)
 
     print("The winner is " + players[current_player] + "!!!")

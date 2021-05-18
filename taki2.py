@@ -421,7 +421,7 @@ def play_prints(used_cards, color, players, current_player, players_cards):
 
 
 def checking_winning(players_cards, current_player, cards_deck, used_cards, current_card):
-    if current_card[0:4] == cards.PLUS:
+    if used_cards[0][0:4] == cards.PLUS:
         players_cards[current_player].append(cards_deck[0])
         del cards_deck[0]
         winning_flag = True

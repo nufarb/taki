@@ -99,6 +99,7 @@ def card_rule(card, old_color):
         new_color = old_color
     elif card == cards.SUPER_TAKI:
         current_step = STEP_STAY_CURRENT_PLAYER
+        new_color = None
         if old_color is None:
             while new_color not in AVAILABLE_COLORS:
                 if new_color is not None:
@@ -336,7 +337,6 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
 
 
 def play(players, current_player, step, players_cards, cards_deck, used_cards, color):
-    global current_card
     play_prints(used_cards, color, players, current_player, players_cards)
     play_flag = True
     while play_flag:
@@ -492,7 +492,7 @@ def opposite_rotation(players, current_player, step, current_step, players_cards
     # change direction card case
     elif current_step == STEP_MOVE_BACKWARD:
         if current_player == len(players) + STEP_MOVE_BACKWARD:
-            return True, 0, -1, players_cards, cards_deck, used_card, color
+            return True, 0, 1, players_cards, cards_deck, used_card, color
         elif current_player < 0:
             return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
         else:

@@ -114,9 +114,8 @@ def card_rule(card, color):
 def checking_legality(used_cards, current_card, color):
     if used_cards[0] == "done":
         if len(used_cards) > 1 and used_cards[1][0] == "2":
-            if current_card[0] == "2" or current_card == cards.KING or current_card[-1] == color or \
-                    current_card == cards.SUPER_TAKI or current_card == cards.COLOR_CHANGER or \
-                    current_card == cards.KING or current_card == cards.BREAK3:
+            if current_card[0] == "2" or current_card[-1] == color or current_card == cards.SUPER_TAKI or \
+                    current_card == cards.BREAK3 or current_card == cards.COLOR_CHANGER or current_card == cards.KING :
                 return False
         elif len(used_cards) > 1 and (used_cards[1] == cards.PLUS3 or used_cards[1] == cards.BREAK3):
             if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == cards.BREAK3 or \
@@ -129,7 +128,6 @@ def checking_legality(used_cards, current_card, color):
         if used_cards[0][0] == "2":
             if used_cards[0][0] == current_card[0] or current_card == cards.KING or current_card == cards.PLUS3:
                 return False
-
             else:
                 print("You can't put this card on '2'! If you don't have valid card please type 'none'.")
                 return True
@@ -142,13 +140,13 @@ def checking_legality(used_cards, current_card, color):
             return True
     elif used_cards[0][-2] == '_':
         if used_cards[0][-1] == current_card[-1] or used_cards[0][0:-2] == current_card[0:-2] or \
-                used_cards[0][0] == color or current_card == '' or current_card == cards.COLOR_CHANGER or \
-                current_card == cards.KING or current_card == cards.PLUS3 or current_card == cards.BREAK3:
+                current_card == cards.COLOR_CHANGER or current_card == cards.KING or current_card == cards.PLUS3 or \
+                current_card == cards.BREAK3 or current_card == cards.SUPER_TAKI:
             return False
         else:
             print("You choose an invalid card! If you don't have valid card please type 'none'.")
             return True
-    elif used_cards[0] == cards.COLOR_CHANGER or used_cards[0] == cards.SUPER_TAKI:
+    elif used_cards[0] == cards.COLOR_CHANGER or used_cards[0] == cards.SUPER_TAKI or used_cards[0] == cards.BREAK3:
         if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == cards.KING or \
                 current_card == cards.PLUS3 or current_card == cards.BREAK3:
             return False
@@ -157,10 +155,6 @@ def checking_legality(used_cards, current_card, color):
             return True
     elif current_card == cards.KING or used_cards[0] == cards.KING:
         return False
-    elif used_cards[0] == cards.BREAK3:
-        if current_card[-1] == color or current_card == cards.SUPER_TAKI or current_card == cards.KING or \
-                current_card == cards.PLUS3 or current_card == cards.COLOR_CHANGER:
-            return False
     else:
         print("You choose an invalid card! If you don't have valid card please type 'none'.")
         return True

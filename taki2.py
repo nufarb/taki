@@ -94,9 +94,19 @@ def card_rule(card, old_color):
     elif card[0:4] == cards.PLUS or card[0:4] == cards.TAKI:
         current_step = STEP_STAY_CURRENT_PLAYER
         new_color = card[-1]
-    elif card == cards.SUPER_TAKI or card == cards.KING:
+    elif card == cards.KING:
         current_step = STEP_STAY_CURRENT_PLAYER
         new_color = old_color
+    elif card == cards.SUPER_TAKI:
+        current_step = STEP_STAY_CURRENT_PLAYER
+        if old_color is None:
+            while new_color not in AVAILABLE_COLORS:
+                if new_color is not None:
+                    print("The color \"{}\" is not available, here are your options: {}".
+                          format(new_color, AVAILABLE_COLORS))
+                new_color = handle_user_input("Please choose the color you want: ")
+        else:
+            new_color = old_color
     elif card == cards.COLOR_CHANGER:
         current_step = STEP_MOVE_FORWARD
         new_color = None
@@ -266,12 +276,15 @@ def step_zero_case(used_cards, players_cards, current_player, card, cards_deck, 
         if new_card != "none":
             del players_cards[current_player][players_cards[current_player].index(new_card)]
             used_cards.insert(0, new_card)
-            current_step, color = card_rule(new_card, color)
+            if new_card == cards.SUPER_TAKI:
+                current_step, new_color = card_rule(new_card, None)
+            else:
+                current_step, new_color = card_rule(new_card, color)
         if new_card == cards.KING or new_card[0:4] == cards.PLUS or new_card == cards.SUPER_TAKI or \
                 new_card[0:4] == cards.TAKI:
             used_cards, players_cards, current_step, cards_deck, new_color = step_zero_case(used_cards, players_cards,
                                                                                             current_player, new_card,
-                                                                                            cards_deck, step, color)
+                                                                                            cards_deck, step, new_color)
             return used_cards, players_cards, current_step, cards_deck, new_color
         elif new_card == "none":
             del cards_deck[0]

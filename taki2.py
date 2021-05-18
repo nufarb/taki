@@ -166,6 +166,8 @@ def plus2(used_cards, cards_deck, players_cards, current_player):
         for i in range(len(used_cards)):
             if used_cards[i][0] == "2":
                 count += 2
+            elif used_cards[i] == cards.PLUS3:
+                count += 3
             elif used_cards[i] == "done":
                 del used_cards[i]
                 break

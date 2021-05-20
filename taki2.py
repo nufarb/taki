@@ -71,14 +71,14 @@ def generate_cards_deck():
 
 
 def game_boot(cards_deck, num_players):
-    players_cards = [[] for _ in range(num_players)]
+    boot_players_cards = [[] for _ in range(num_players)]
     counter = 0
     while counter < 8:
         for i in range(number_of_players):
-            players_cards[i].append(cards_deck[0])
+            boot_players_cards[i].append(cards_deck[0])
             del cards_deck[0]
         counter += 1
-    return cards_deck, players_cards
+    return cards_deck, boot_players_cards
 
 
 def card_rule(card, old_color):
@@ -256,7 +256,6 @@ def zero_case_plus(used_cards, players_cards, current_player, cards_deck, step, 
     if new_card[0:4] == cards.PLUS or new_card == cards.KING or new_card[0:4] == cards.PLUS or \
             new_card == cards.SUPER_TAKI or new_card[0:4] == cards.TAKI:
         current_step, new_color = card_rule(new_card, color)
-        card = new_card
         return step_zero_case(used_cards, players_cards, current_player, cards_deck, step, new_color)
     elif new_card == "none":
         players_cards[current_player].append(cards_deck[0])
@@ -279,24 +278,25 @@ def zero_case_king(used_cards, players_cards, current_player, cards_deck, step, 
             print("The card you selected does not exist in your deck, if you don't have valid card please type 'none'")
         if zero_case_flag:
             new_card = handle_user_input("Please choose card again: ")
-    if new_card != "none":
+    if new_card == "none":
+        del cards_deck[0]
+        current_step = STEP_MOVE_FORWARD
+        new_color = color
+        return used_cards, players_cards, current_step, cards_deck, new_color
+    else:
         del players_cards[current_player][players_cards[current_player].index(new_card)]
         used_cards.insert(0, new_card)
         if new_card == cards.SUPER_TAKI:
             current_step, new_color = card_rule(new_card, None)
         else:
             current_step, new_color = card_rule(new_card, color)
-    if new_card == cards.KING or new_card[0:4] == cards.PLUS or new_card == cards.SUPER_TAKI or \
-            new_card[0:4] == cards.TAKI:
-        return step_zero_case(used_cards, players_cards, current_player, cards_deck, step, new_color)
-    elif new_card == "none":
-        del cards_deck[0]
-        current_step = STEP_MOVE_FORWARD
-        new_color = color
-        return used_cards, players_cards, current_step, cards_deck, new_color
-    else:
-        current_step, new_color = card_rule(new_card, color)
-        return used_cards, players_cards, current_step, cards_deck, new_color
+
+        if new_card == cards.KING or new_card[0:4] == cards.PLUS or new_card == cards.SUPER_TAKI or \
+                new_card[0:4] == cards.TAKI:
+            return step_zero_case(used_cards, players_cards, current_player, cards_deck, step, new_color)
+        else:
+            current_step, new_color = card_rule(new_card, color)
+            return used_cards, players_cards, current_step, cards_deck, new_color
 
 
 def zero_cases_taki(used_cards, players_cards, current_player, cards_deck, step, color):
@@ -339,12 +339,10 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
         current_card = handle_user_input(players[current_player] + " please choose a card: ")
         if current_card == "none":
             break
+        elif current_card in players_cards[current_player]:
+            play_flag = checking_legality(used_cards, current_card, color)
         else:
-            if current_card in players_cards[current_player]:
-                play_flag = checking_legality(used_cards, current_card, color)
-            else:
-                print("The card you selected does not exist in your deck, if you don't have valid card please type "
-                      "'none'")
+            print("The card you selected does not exist in your deck, if you don't have valid card please type 'none'")
     if current_card == "none":
         players_cards, cards_deck, used_cards = plus2(used_cards, cards_deck, players_cards, current_player)
         current_step = STEP_MOVE_FORWARD
@@ -386,11 +384,11 @@ def play(players, current_player, step, players_cards, cards_deck, used_cards, c
         if not play_flag:
             return play_flag, current_player, 0, players_cards, cards_deck, used_cards, color
 
-    # regular rotation
+    # regular rotation --->
     if step == 1:
         return regular_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_cards,
                                 color, current_card)
-    # opposite rotation step=-1
+    # opposite rotation step=-1  <---
     else:
         return opposite_rotation(players, current_player, step, current_step, players_cards, cards_deck, used_cards,
                                  color, current_card)
@@ -509,19 +507,18 @@ if __name__ == "__main__":
     cards_deck, players_cards = game_boot(cards_deck, number_of_players)
 
     print("Lets start to play!")
-    current_card = cards_deck[0]
-    while current_card[0].isalpha() or current_card[0] == '2':
+    open_card = cards_deck[0]
+    while open_card[0].isalpha() or open_card[0] == '2':
         del cards_deck[0]
-        cards_deck.append(current_card)
-        current_card = cards_deck[0]
+        cards_deck.append(open_card)
+        open_card = cards_deck[0]
     del cards_deck[0]
-    used_cards = [current_card]
-    print("The opening card is " + current_card)
-
+    used_cards = [open_card]
+    print("The opening card is " + open_card)
     current_player = 0
     step = 1
     flag = True
-    color = current_card[-1]
+    color = open_card[-1]
     while flag:
         flag, current_player, step, players_cards, cards_deck, used_cards, color = play(players, current_player, step,
                                                                                         players_cards, cards_deck,

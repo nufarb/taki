@@ -310,12 +310,7 @@ def zero_cases_taki(used_cards, players_cards, current_player, cards_deck, step,
         zero_case_flag = True
         while zero_case_flag:
             new_card = handle_user_input("Please choose card again: ")
-            if new_card == "none":
-                status = "stop"
-                zero_case_flag = False
-                new_card = "close"
-                current_step = STEP_MOVE_FORWARD
-            elif new_card != "close":
+            if new_card != "close" and new_card != "none":
                 if new_card in players_cards[current_player]:
                     zero_case_flag = checking_legality(used_cards, new_card, color)
                     current_step, new_color = card_rule(new_card, color)
@@ -325,6 +320,7 @@ def zero_cases_taki(used_cards, players_cards, current_player, cards_deck, step,
             else:
                 status = "stop"
                 zero_case_flag = False
+                new_card = "close"
                 if used_cards[0][0:4] == cards.TAKI or used_cards[0] == cards.SUPER_TAKI:
                     current_step = STEP_MOVE_FORWARD
         if new_card != "close":

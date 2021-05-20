@@ -490,9 +490,9 @@ def opposite_rotation(players, current_player, step, current_step, players_cards
         if current_player == len(players) + STEP_MOVE_BACKWARD:
             return True, 0, 1, players_cards, cards_deck, used_card, color
         elif current_player < 0:
-            return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
-        else:
             return True, current_player - current_step, 1, players_cards, cards_deck, used_card, color
+        else:
+            return True, current_player + current_step, 1, players_cards, cards_deck, used_card, color
     # current_step == 1 == STEP_MOVE_FORWARD
     else:
         if current_player == 0:
